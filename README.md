@@ -45,4 +45,3 @@ by the Free Software Foundation; either version 2.1 of the License,
 or (at your option) version 3 of the License.
 
 http://www.gnu.org/licenses/lgpl-2.1.html
-

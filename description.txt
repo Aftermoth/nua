@@ -1,0 +1,1 @@
+Node Update Alert invokes the callback functions defined by an event position's six neighbours. 
