@@ -1,5 +1,6 @@
+Minetest mod: nua
 
-==== NUA ====
+==== Node Update Alerts ====
 
 USAGE:
 
@@ -11,8 +12,8 @@ To raise a normal alert from any position:
 To receive an alert:
 
 	minetest.get_meta(receivernodepos):set_string("on_nbr_update","modname.functionname")
-where,
-	modname.functionname = function(receiverpos, eventpos)
+
+where, modname.functionname = function(receiverpos, eventpos)
 
 
 Typically, a nua-aware node will have registration code like:
@@ -31,8 +32,10 @@ NOTES:
 "on_nbr_update" is generically named so the interface is equally usable by alternative alert mods.
 
 
-PLANNED:
-Currently, only nua-aware mods can use this, but code will be added to automatically give send capability to simple nodes from any mod.
+EXTENSION:
+Only nua-aware mods can use this mod.
+Another mod, nuafan, adds nua-support to nodes from nua-ignorant mods as well.
+https://github.com/Aftermoth/nuafan
 
 
 ----
