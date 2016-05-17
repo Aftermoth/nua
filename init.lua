@@ -19,8 +19,8 @@ nua = {
 
 --====== still tuning
 
-local nua_ready = 0.5  -- Seconds after event before confirmed for alert. Merges multi-event changes at the same position.
-local nua_slack = 0.2  -- Seconds additional tolerance before alert. Callback period while active.
+local nua_ready = 500000 -- 0.5 seconds after event before confirmed for alert. Merges multi-event changes at the same position.
+local nua_slack = 200000 -- 0.2 seconds additional tolerance before alert. Callback period while active.
 
 
 --====== send alerts
@@ -60,6 +60,20 @@ local function nua_initkey()
 end
 
 
+--====== time
+
+-- get_us_time is not defined in 0.4.10 and get_gametime is too coarse.
+local seconds = 0.0
+if not minetest.get_us_time then
+	minetest.register_globalstep(function(dtime)
+				seconds = seconds + dtime
+			end)
+	minetest.get_us_time = function()
+		return seconds * 1000000
+	end
+end
+
+
 --====== process
 
 local nua_noproc = true
@@ -68,7 +82,7 @@ local nua_pstop = true
 local nua_pbye = 0
 
 function nua_process()
-	local t0 = minetest.get_gametime()
+	local t0 = minetest.get_us_time()
 	
 	local now_list = {}
 	for ps,t in pairs(nua_list) do
@@ -79,7 +93,7 @@ function nua_process()
 	local rem = false
 	local new_list = {}
 	
-	local t1 = minetest.get_gametime()
+	local t1 = minetest.get_us_time()
 	
 	for ps,t in pairs(now_list) do
 		if t1 - t < nua_ready then
@@ -103,10 +117,10 @@ function nua_process()
 	else
 		nua_initok = nua_initkey
 		nua_pstop = true
-		nua_pbye = minetest.get_gametime()
+		nua_pbye = minetest.get_us_time()
 	end
 	
-	minetest.after(math.max(0, nua_slack + t0 - minetest.get_gametime()), nua_process)
+	minetest.after(math.max(0, nua_slack + t0 - minetest.get_us_time()), nua_process)
 	
 end
 
@@ -143,6 +157,6 @@ end
 --====== events
 
 nua.event = function (pos)
-	nua_list[minetest.pos_to_string(pos)] = minetest.get_gametime() -- uses latest time for pos. Alert delayed until settled.
+	nua_list[minetest.pos_to_string(pos)] = minetest.get_us_time() -- uses latest time for pos. Alert delayed until settled.
 	nua_initok()
 end
