@@ -17,6 +17,7 @@ nua = {
 	alert,		-- = function(eventpos) Alert immediately.
 }
 
+
 --====== still tuning
 
 local nua_ready = 500000 -- 0.5 seconds after event before confirmed for alert. Merges multi-event changes at the same position.
@@ -110,7 +111,7 @@ function nua_process()
 		end
 	elseif nua_pstop then
 		-- Delay for all pre-initkey events to be processed before exit.
-		if t0 - nua_pbye > 0.1 then
+		if t0 - nua_pbye > 100000 then
 			nua_noproc = true
 			return
 		end
@@ -119,8 +120,8 @@ function nua_process()
 		nua_pstop = true
 		nua_pbye = minetest.get_us_time()
 	end
-	
-	minetest.after(math.max(0, nua_slack + t0 - minetest.get_us_time()), nua_process)
+		
+	minetest.after(math.max(0, (nua_slack + t0 - minetest.get_us_time())/1000000), nua_process)
 	
 end
 
@@ -157,6 +158,7 @@ end
 --====== events
 
 nua.event = function (pos)
+	
 	nua_list[minetest.pos_to_string(pos)] = minetest.get_us_time() -- uses latest time for pos. Alert delayed until settled.
 	nua_initok()
 end
